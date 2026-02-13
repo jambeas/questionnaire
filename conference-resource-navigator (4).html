@@ -1,0 +1,972 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Find Your Match — Conference Resource Navigator</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0f1419;
+  --surface: #1a2028;
+  --surface-hover: #222c36;
+  --accent: #e8a838;
+  --accent-glow: #e8a83822;
+  --text: #e8e6e3;
+  --text-muted: #8a9bae;
+  --border: #2a3642;
+  --success: #4ecdc4;
+  --card-bg: #1e2830;
+  --error: #e85454;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  min-height: 100dvh;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+body::before {
+  content: '';
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: radial-gradient(ellipse at 20% 0%, #e8a83808 0%, transparent 50%),
+              radial-gradient(ellipse at 80% 100%, #4ecdc408 0%, transparent 50%);
+  pointer-events: none; z-index: 0;
+}
+.container {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 28px 18px 80px;
+  position: relative; z-index: 1;
+}
+.header {
+  text-align: center; margin-bottom: 32px;
+  animation: fadeUp 0.6s ease-out;
+}
+.header-tag {
+  display: inline-block; font-size: 10px; font-weight: 700;
+  letter-spacing: 3px; text-transform: uppercase; color: var(--accent);
+  border: 1px solid var(--accent); padding: 5px 14px;
+  border-radius: 100px; margin-bottom: 14px;
+}
+.header h1 {
+  font-family: 'DM Serif Display', serif;
+  font-size: clamp(26px, 7vw, 44px);
+  font-weight: 400; line-height: 1.15; margin-bottom: 10px;
+}
+.header h1 em { color: var(--accent); font-style: italic; }
+.header p {
+  color: var(--text-muted); font-size: 15px; line-height: 1.6;
+  max-width: 480px; margin: 0 auto;
+}
+.progress-wrap { margin-bottom: 24px; animation: fadeUp 0.6s ease-out 0.1s both; }
+.progress-bar { height: 3px; background: var(--border); border-radius: 3px; overflow: hidden; }
+.progress-fill {
+  height: 100%; background: linear-gradient(90deg, var(--accent), var(--success));
+  border-radius: 3px; transition: width 0.5s cubic-bezier(0.4,0,0.2,1); width: 0%;
+}
+.progress-label {
+  display: flex; justify-content: space-between; margin-top: 8px;
+  font-size: 12px; color: var(--text-muted);
+}
+.question-card {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 16px; padding: 24px 20px; animation: fadeUp 0.4s ease-out;
+}
+.question-number {
+  font-size: 11px; font-weight: 700; letter-spacing: 2px;
+  text-transform: uppercase; color: var(--accent); margin-bottom: 10px;
+}
+.question-text {
+  font-family: 'DM Serif Display', serif;
+  font-size: 21px; line-height: 1.35; margin-bottom: 6px;
+}
+.question-subtext {
+  color: var(--text-muted); font-size: 14px;
+  margin-bottom: 22px; line-height: 1.5;
+}
+.options { display: flex; flex-direction: column; gap: 8px; }
+.option-btn {
+  display: flex; align-items: flex-start; gap: 12px;
+  background: var(--card-bg); border: 1px solid var(--border);
+  border-radius: 12px; padding: 15px 14px; cursor: pointer;
+  transition: all 0.2s ease; text-align: left; color: var(--text);
+  font-family: inherit; font-size: 14px; line-height: 1.5;
+  width: 100%; -webkit-tap-highlight-color: transparent;
+}
+.option-btn:hover, .option-btn:active {
+  background: var(--surface-hover); border-color: var(--accent);
+}
+.option-btn:active { transform: scale(0.985); }
+.option-icon {
+  flex-shrink: 0; width: 34px; height: 34px; border-radius: 9px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 17px; background: var(--accent-glow);
+  border: 1px solid var(--accent); margin-top: 1px;
+}
+.option-label { font-weight: 600; display: block; }
+.option-desc { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
+
+/* EMAIL */
+.email-card {
+  background: var(--surface); border: 1px solid var(--accent);
+  border-radius: 16px; padding: 28px 20px; text-align: center;
+  animation: fadeUp 0.4s ease-out; position: relative; overflow: hidden;
+}
+.email-card::before {
+  content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
+  background: linear-gradient(90deg, var(--accent), var(--success));
+}
+.email-icon-big { font-size: 40px; margin-bottom: 14px; display: block; }
+.email-card h2 { font-family: 'DM Serif Display', serif; font-size: 23px; margin-bottom: 8px; }
+.email-card p {
+  color: var(--text-muted); font-size: 14px; line-height: 1.6;
+  margin-bottom: 22px; max-width: 400px; margin-left: auto; margin-right: auto;
+}
+.email-form { display: flex; flex-direction: column; gap: 10px; max-width: 380px; margin: 0 auto; }
+.input-field {
+  width: 100%; padding: 14px 16px; background: var(--card-bg);
+  border: 1px solid var(--border); border-radius: 10px; color: var(--text);
+  font-family: inherit; font-size: 16px; outline: none;
+  transition: border-color 0.2s; -webkit-appearance: none;
+}
+.input-field::placeholder { color: var(--text-muted); }
+.input-field:focus { border-color: var(--accent); }
+.input-field.error { border-color: var(--error); }
+.error-msg { color: var(--error); font-size: 12px; text-align: left; display: none; margin-top: -4px; }
+.error-msg.show { display: block; }
+.submit-btn {
+  width: 100%; padding: 15px; background: var(--accent); border: none;
+  border-radius: 10px; color: var(--bg); font-family: inherit;
+  font-size: 15px; font-weight: 700; cursor: pointer;
+  transition: all 0.2s; -webkit-tap-highlight-color: transparent; margin-top: 4px;
+}
+.submit-btn:hover { filter: brightness(1.1); }
+.submit-btn:active { transform: scale(0.98); }
+.submit-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+.skip-link {
+  display: inline-block; margin-top: 14px; color: var(--text-muted);
+  font-size: 13px; cursor: pointer; text-decoration: underline;
+  text-underline-offset: 3px; background: none; border: none;
+  font-family: inherit; -webkit-tap-highlight-color: transparent;
+}
+.skip-link:hover { color: var(--text); }
+
+/* RESULTS */
+.results-card { animation: fadeUp 0.5s ease-out; }
+.result-match {
+  background: var(--surface); border: 1px solid var(--accent);
+  border-radius: 16px; padding: 24px 20px; margin-bottom: 12px;
+  position: relative; overflow: hidden;
+}
+.result-match::before {
+  content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
+  background: linear-gradient(90deg, var(--accent), var(--success));
+}
+.match-badge {
+  display: inline-block; font-size: 10px; font-weight: 700;
+  letter-spacing: 2px; text-transform: uppercase; color: var(--bg);
+  background: var(--accent); padding: 4px 12px; border-radius: 100px; margin-bottom: 14px;
+}
+.match-name { font-family: 'DM Serif Display', serif; font-size: 23px; margin-bottom: 4px; }
+.match-tagline { color: var(--accent); font-weight: 600; font-size: 13px; margin-bottom: 12px; }
+.match-description { color: var(--text-muted); font-size: 14px; line-height: 1.7; margin-bottom: 18px; }
+.match-url {
+  display: inline-block; color: var(--accent); font-size: 13px;
+  font-weight: 600; margin-bottom: 16px; text-decoration: none;
+  border-bottom: 1px dashed var(--accent); padding-bottom: 1px;
+}
+.match-why {
+  background: var(--card-bg); border-radius: 10px; padding: 14px 16px;
+  font-size: 14px; line-height: 1.6;
+}
+.match-why strong {
+  color: var(--accent); display: block; font-size: 10px;
+  letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 6px;
+}
+.also-consider {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 16px; padding: 20px; margin-top: 12px;
+}
+.also-consider h3 {
+  font-size: 12px; font-weight: 700; letter-spacing: 2px;
+  text-transform: uppercase; color: var(--text-muted); margin-bottom: 14px;
+}
+.also-item { display: flex; gap: 12px; padding: 10px 0; border-bottom: 1px solid var(--border); }
+.also-item:last-child { border-bottom: none; }
+.also-item-icon {
+  flex-shrink: 0; width: 30px; height: 30px; border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 14px; background: var(--card-bg); border: 1px solid var(--border);
+}
+.also-item-name { font-weight: 600; font-size: 14px; }
+.also-item-reason { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
+.restart-btn {
+  display: block; width: 100%; margin-top: 16px; padding: 15px;
+  background: transparent; border: 1px solid var(--border);
+  border-radius: 12px; color: var(--text-muted); font-family: inherit;
+  font-size: 14px; font-weight: 600; cursor: pointer;
+  transition: all 0.2s ease; -webkit-tap-highlight-color: transparent;
+}
+.restart-btn:hover { border-color: var(--accent); color: var(--accent); }
+.back-btn {
+  display: inline-flex; align-items: center; gap: 6px;
+  background: none; border: none; color: var(--text-muted);
+  font-family: inherit; font-size: 13px; cursor: pointer;
+  margin-bottom: 14px; padding: 6px 0; transition: color 0.2s;
+  -webkit-tap-highlight-color: transparent;
+}
+.back-btn:hover { color: var(--accent); }
+.back-btn svg { width: 16px; height: 16px; }
+.hidden { display: none !important; }
+
+/* TOAST */
+.toast {
+  position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
+  background: var(--success); color: var(--bg); padding: 10px 20px;
+  border-radius: 10px; font-size: 13px; font-weight: 600;
+  z-index: 300; opacity: 0; transition: opacity 0.3s;
+  pointer-events: none; white-space: nowrap;
+}
+.toast.error { background: var(--error); color: #fff; }
+.toast.show { opacity: 1; }
+
+/* CONFIG BANNER */
+.config-warning {
+  background: var(--error); color: #fff; text-align: center;
+  padding: 10px 18px; font-size: 13px; font-weight: 600;
+  position: fixed; top: 0; left: 0; right: 0; z-index: 300;
+}
+.config-warning a { color: #fff; }
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(14px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@media (max-width: 380px) {
+  .container { padding: 18px 12px 80px; }
+  .question-card, .email-card, .result-match, .also-consider { padding: 20px 16px; }
+  .option-btn { padding: 13px 12px; }
+}
+</style>
+</head>
+<body>
+
+<!-- Shows if Google Script URL not configured -->
+<div class="config-warning hidden" id="configWarning">
+  ⚠️ Google Sheets not connected — leads won't be saved. See setup instructions.
+</div>
+
+<div class="container">
+  <div class="header">
+    <div class="header-tag">Conference Resource Navigator</div>
+    <h1>Let's find <em>exactly</em> who you need.</h1>
+    <p>Answer a few quick questions and we'll match you with the right people at this booth.</p>
+  </div>
+  <div class="progress-wrap">
+    <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+    <div class="progress-label">
+      <span id="progressText">Let's get started</span>
+      <span id="progressStep"></span>
+    </div>
+  </div>
+
+  <!-- THREE AREAS — only one visible at a time -->
+  <div id="questionArea"></div>
+
+  <div id="emailArea" class="hidden">
+    <button class="back-btn" onclick="goBack()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>Back</button>
+    <div class="email-card">
+      <span class="email-icon-big">🎯</span>
+      <h2>Your match is ready!</h2>
+      <p>Drop your email and we'll send you a summary with intro links to the right people.</p>
+      <div class="email-form">
+        <input type="email" id="emailInput" class="input-field" placeholder="your@email.com" autocomplete="email" inputmode="email">
+        <div class="error-msg" id="emailError">Please enter a valid email address</div>
+        <input type="text" id="nameInput" class="input-field" placeholder="Your name (optional)" autocomplete="name">
+        <input type="text" id="orgInput" class="input-field" placeholder="Organization (optional)" autocomplete="organization">
+        <button class="submit-btn" id="submitBtn" onclick="submitEmail()">See My Match →</button>
+      </div>
+      <button class="skip-link" onclick="skipEmail()">Skip — just show results</button>
+    </div>
+  </div>
+
+  <div id="resultArea" class="hidden"></div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+/* ═══════════════════════════════════
+   CONFIG — PASTE YOUR URL HERE
+   ═══════════════════════════════════ */
+var GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyKWOisUKcmacwi1E3CfchyMJCh1qOJUeuNtkvehlE6Q-h7JhhhvaSWQqTadSdLs2NO5w/exec';
+
+// Show warning if not configured
+if (GOOGLE_SCRIPT_URL.indexOf('PASTE_YOUR') !== -1) {
+  document.getElementById('configWarning').classList.remove('hidden');
+}
+
+/* ═══════════════════════════════════
+   LEADS — sends to Google Sheets
+   ═══════════════════════════════════ */
+function sendLead(data) {
+  var matchName = '';
+  if (data.resultKey && RESULTS[data.resultKey]) {
+    matchName = COMPANIES[RESULTS[data.resultKey].primary].name;
+  }
+
+  var payload = {
+    email: data.email,
+    name: data.name || '',
+    org: data.org || '',
+    match: matchName,
+    resultKey: data.resultKey || ''
+  };
+
+  // Also save locally as backup
+  try {
+    var local = JSON.parse(localStorage.getItem('conf_leads_v4') || '[]');
+    payload.timestamp = new Date().toISOString();
+    local.push(payload);
+    localStorage.setItem('conf_leads_v4', JSON.stringify(local));
+  } catch(e) {}
+
+  // Send to Google Sheets
+  if (GOOGLE_SCRIPT_URL.indexOf('PASTE_YOUR') === -1) {
+    fetch(GOOGLE_SCRIPT_URL, {
+      method: 'POST',
+      mode: 'no-cors',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    }).then(function() {
+      showToast('✓ Saved');
+    }).catch(function() {
+      showToast('⚠ Network error — saved locally', true);
+    });
+  }
+}
+
+function showToast(msg, isError) {
+  var t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'toast show' + (isError ? ' error' : '');
+  setTimeout(function(){ t.className = 'toast'; }, 2500);
+}
+
+/* ═══════════════════════════════════
+   COMPANIES
+   ═══════════════════════════════════ */
+var COMPANIES = {
+  econdevops: { name:"Econ Dev Ops", icon:"⚙️", tagline:"Virtual Assistant Services for Chambers & EDOs", url:"econdevops.com",
+    description:"Econ Dev Ops provides pre-vetted virtual assistants trained specifically for the economic development space. They handle admin, social media, newsletters, scheduling, invoicing — all the behind-the-scenes work that keeps your organization running so you can focus on building community." },
+  smartstart: { name:"SmartStart Business Development", icon:"🚀", tagline:"Microbusiness Support for Small Towns & Rural Communities", url:"smartstartcommunity.com",
+    description:"SmartStart partners with Chambers, Main Streets, and EDOs to provide plug-and-play programs, workshops, and tools that help communities support their microbusiness owners — the shopkeepers, makers, pop-up retailers, and home-based entrepreneurs who are often overlooked by traditional programs." },
+  crowdfundbetter: { name:"Crowdfund Better", icon:"💡", tagline:"Crowdfunding Education & Training", url:"crowdfundbetter.com",
+    description:"Crowdfund Better is the leading crowdfunding education organization in the U.S., offering courses, certified advisor programs, and consulting that help businesses, nonprofits, and community projects raise capital through rewards-based and investment crowdfunding campaigns." },
+  storefrontmastery: { name:"Storefront Mastery", icon:"🏪", tagline:"Transforming Downtowns Through Design & Experience", url:"storefrontmastery.com",
+    description:"Storefront Mastery works with BIDs, Main Street programs, and district managers to transform downtowns into unforgettable experiences using proven design principles, outstanding hospitality, and engaging storytelling. They train the trainers and equip business owners to create epic storefronts." },
+  nc3: { name:"National Coalition for Community Capital (NC3)", icon:"🏦", tagline:"Community Investment Funds & Local Investing", url:"nc3now.org",
+    description:"NC3 activates the local investing movement by incubating Community Investment Funds — locally-controlled funds that let everyday community members invest in local businesses, real estate, and development projects. They educate, advocate, and provide an accelerator program." },
+  quillify: { name:"Quillify.ai", icon:"📝", tagline:"AI-Powered Grant Finding & Proposal Writing", url:"quillify.ai",
+    description:"Quillify uses AI to find grants you qualify for and writes full proposals in a fraction of the time. The platform serves businesses, nonprofits, and EDOs — turning weeks of grant work into hours with a 40% higher success rate." },
+  sitehunt: { name:"Sitehunt.io", icon:"📍", tagline:"AI Property Database & RFI Automation for Economic Developers", url:"sitehunt.io",
+    description:"Sitehunt is an AI-powered platform that builds comprehensive property databases and automates RFI responses. It enriches site data with utility, zoning, infrastructure, and workforce info — so you never scramble when a site selector calls." },
+  ashlime: { name:"Rik Adamski — ASH+LIME", icon:"🏘️", tagline:"Neighborhood Planning & Incremental Placemaking", url:"ashlime.com",
+    description:"Rik Adamski specializes in bottom-up, incremental approaches to neighborhood revitalization. Through ASH+LIME and the Storefront Renaissance League, he helps cities activate public spaces, enhance storefronts, and build engagement through small, high-impact actions." },
+  civicbrand: { name:"Ryan Short — CivicBrand", icon:"🎯", tagline:"Place Branding, Community Engagement & Destination Strategy", url:"civicbrand.com",
+    description:"CivicBrand aligns people, partners, and policy around a shared civic brand. Ryan Short helps cities, downtowns, and regions craft authentic identities that drive talent attraction, tourism, investment, and civic pride through engagement-led strategy." },
+  zeroemptyspaces: { name:"Zero Empty Spaces", icon:"🎨", tagline:"Turning Vacant Storefronts into Artist Studios", url:"zeroemptyspaces.com",
+    description:"Zero Empty Spaces transforms vacant commercial real estate into affordable working artist studios. They fill empty spaces with creativity, increase foot traffic, and turn urban blight into vibrant cultural hubs." }
+};
+
+/* ═══════════════════════════════════
+   DECISION TREE
+   ═══════════════════════════════════ */
+var TREE = {
+
+  start: {
+    q:"What's the biggest challenge you're facing right now?",
+    sub:"Pick the one that keeps you up at night.",
+    opts:[
+      {icon:"😰", label:"We're overwhelmed & understaffed", desc:"Too much work, not enough people or hours", next:"capacity"},
+      {icon:"🏚️", label:"Our downtown or Main Street needs help", desc:"Vacant storefronts, low traffic, struggling businesses", next:"downtown"},
+      {icon:"🌱", label:"We need to support entrepreneurs & small biz", desc:"Programs, capital, space, and support", next:"entrepreneur"},
+      {icon:"💰", label:"We need funding or capital", desc:"Grants, community investment, crowdfunding", next:"funding"},
+      {icon:"📢", label:"We can't attract people or investment", desc:"Talent, tourists, businesses — nobody knows us", next:"attraction"},
+    ]
+  },
+
+  /* CAPACITY */
+  capacity: {
+    q:"What kind of capacity problem is it?",
+    sub:"Let's narrow this down.",
+    opts:[
+      {icon:"📋", label:"Day-to-day admin is burying us", desc:"Email, newsletters, social media, scheduling", next:"R_econdevops_admin"},
+      {icon:"🏗️", label:"We don't have business support programs", desc:"No workshops, training, or structured support", next:"capacity_biz"},
+      {icon:"📊", label:"Our site/property data is a mess", desc:"Can't respond to RFIs fast enough", next:"R_sitehunt_data"},
+      {icon:"🤷", label:"All of the above, honestly", desc:"We need help everywhere", next:"capacity_all"},
+    ]
+  },
+  capacity_biz: {
+    q:"What stage are the businesses you're trying to help?",
+    sub:"This helps us match the right partner.",
+    opts:[
+      {icon:"🌱", label:"Pre-startup & microbusinesses", desc:"Ideas, side hustles, home-based businesses", next:"R_smartstart_micro"},
+      {icon:"🏪", label:"Existing storefronts needing improvement", desc:"Open but struggling with customers", next:"R_storefront_existing"},
+      {icon:"📈", label:"Growing businesses needing capital", desc:"They have traction but need money", next:"entrepreneur_capital"},
+    ]
+  },
+  capacity_all: {
+    q:"If you could fix ONE thing first, what would it be?",
+    sub:"Start where the pain is sharpest.",
+    opts:[
+      {icon:"⚙️", label:"Get admin off my plate", desc:"Free up time for real work", next:"R_econdevops_admin"},
+      {icon:"🚀", label:"Launch entrepreneur support programs", desc:"Give business owners structured help", next:"R_smartstart_launch"},
+      {icon:"📍", label:"Get our property data organized", desc:"Be RFI-ready at all times", next:"R_sitehunt_data"},
+      {icon:"🏪", label:"Help our downtown businesses improve", desc:"Storefronts, design, customer experience", next:"R_storefront_existing"},
+    ]
+  },
+
+  /* ENTREPRENEUR */
+  entrepreneur: {
+    q:"What does your community need most to grow local businesses?",
+    sub:"Think about your biggest gap right now.",
+    opts:[
+      {icon:"🚀", label:"Programs & training for entrepreneurs", desc:"Workshops, curriculum, hands-on support", next:"ent_programs"},
+      {icon:"💰", label:"Capital & funding for local businesses", desc:"Investment, crowdfunding, financing", next:"entrepreneur_capital"},
+      {icon:"🏪", label:"Affordable space for new businesses", desc:"Storefronts, studios, pop-up retail", next:"ent_space"},
+      {icon:"🏘️", label:"Help for existing businesses to thrive", desc:"Design, customers, community presence", next:"ent_existing"},
+      {icon:"🧩", label:"We need the whole ecosystem", desc:"Programs + capital + space — all of it", next:"ent_ecosystem"},
+    ]
+  },
+  ent_programs: {
+    q:"What kind of entrepreneurs are you trying to help?",
+    sub:"Different stages need different tools.",
+    opts:[
+      {icon:"💡", label:"Aspiring — people with ideas, not businesses yet", desc:"Side hustles, dreamers, first-timers", next:"R_smartstart_aspiring"},
+      {icon:"🛍️", label:"New business owners learning the ropes", desc:"Just opened, need fundamentals", next:"R_smartstart_new"},
+      {icon:"🌐", label:"All stages — we want a full pipeline", desc:"From idea stage through established", next:"R_smartstart_pipeline"},
+    ]
+  },
+  entrepreneur_capital: {
+    q:"How do you want to get capital to local businesses?",
+    sub:"Each model works differently.",
+    opts:[
+      {icon:"🏦", label:"Community members invest locally", desc:"Residents invest in local businesses & projects", next:"R_nc3_invest"},
+      {icon:"📣", label:"Help businesses crowdfund", desc:"Turn customers & neighbors into backers", next:"R_crowdfund_biz"},
+      {icon:"🏛️", label:"Find grants for business programs", desc:"Government or foundation grants", next:"R_quillify_grants"},
+      {icon:"🤷", label:"Not sure which model fits us", desc:"Help me think it through", next:"ent_capital_unsure"},
+    ]
+  },
+  ent_capital_unsure: {
+    q:"What's your community like?",
+    sub:"This helps us recommend the right capital model.",
+    opts:[
+      {icon:"🏘️", label:"Small town, tight-knit community", desc:"People know each other, invest in each other", next:"R_nc3_smalltown"},
+      {icon:"🏙️", label:"Mid-size with a diverse business base", desc:"Mix of sectors, lots of small businesses", next:"R_crowdfund_diverse"},
+      {icon:"🏗️", label:"We have specific projects needing funding", desc:"A building, a program, a development", next:"R_crowdfund_project"},
+    ]
+  },
+  ent_space: {
+    q:"What kind of space do entrepreneurs need?",
+    sub:"Different solutions for different needs.",
+    opts:[
+      {icon:"🎨", label:"Creative studios & maker spaces", desc:"Artists, makers, creative entrepreneurs", next:"R_zes_creative"},
+      {icon:"🛍️", label:"Retail storefronts — pop-up to permanent", desc:"Affordable spots to sell products", next:"R_zes_retail"},
+      {icon:"🏗️", label:"Spaces exist but they look rough", desc:"Need renovation, design, curb appeal", next:"R_storefront_refresh"},
+      {icon:"📍", label:"We don't even know what's available", desc:"Need to inventory our commercial space", next:"R_sitehunt_inventory"},
+    ]
+  },
+  ent_existing: {
+    q:"What do your existing businesses need help with?",
+    sub:"Let's find the right kind of support.",
+    opts:[
+      {icon:"🏪", label:"Their storefronts look tired", desc:"Poor signage, uninviting, no curb appeal", next:"R_storefront_existing"},
+      {icon:"🎯", label:"They can't attract customers", desc:"Nobody knows they're here", next:"R_civicbrand_biz"},
+      {icon:"💰", label:"They need capital to grow", desc:"Expansion, inventory, equipment", next:"entrepreneur_capital"},
+      {icon:"🚀", label:"They need business fundamentals", desc:"Operations, marketing, financials", next:"R_smartstart_existing"},
+    ]
+  },
+  ent_ecosystem: {
+    q:"What do you already have in place?",
+    sub:"Let's build on what exists.",
+    opts:[
+      {icon:"🚫", label:"Almost nothing — starting from scratch", desc:"Need the foundation first", next:"R_smartstart_scratch"},
+      {icon:"📋", label:"Some programs, but no capital pipeline", desc:"Training exists, funding doesn't", next:"R_nc3_addcapital"},
+      {icon:"💰", label:"Funding available, but no programs", desc:"Money exists, structure doesn't", next:"R_smartstart_funded"},
+      {icon:"🏪", label:"Programs and funding, but no space", desc:"Support exists, physical space doesn't", next:"R_zes_ecosystem"},
+    ]
+  },
+
+  /* DOWNTOWN */
+  downtown: {
+    q:"What does 'needs help' look like?",
+    sub:"Pick the most pressing issue.",
+    opts:[
+      {icon:"🚪", label:"Too many vacant storefronts", desc:"Empty windows, dark buildings", next:"dt_vacant"},
+      {icon:"😐", label:"Open businesses look tired", desc:"Poor signage, uninviting, no curb appeal", next:"R_storefront_tired"},
+      {icon:"🤔", label:"We don't have a clear identity", desc:"Can't explain what's special about us", next:"R_civicbrand_identity"},
+      {icon:"🧩", label:"We need a comprehensive revitalization plan", desc:"Not sure where to start", next:"dt_plan"},
+      {icon:"🚶", label:"Low foot traffic, no energy", desc:"People drive through, don't stop", next:"dt_traffic"},
+    ]
+  },
+  dt_vacant: {
+    q:"What would you do with those empty spaces?",
+    sub:"Different approaches for different goals.",
+    opts:[
+      {icon:"🎨", label:"Activate them with creative uses", desc:"Artists, pop-ups, temporary activations", next:"R_zes_activate"},
+      {icon:"🏪", label:"Help new businesses fill them", desc:"Grow the entrepreneur pipeline", next:"R_smartstart_fill"},
+      {icon:"🔄", label:"Both — activate now, build pipeline", desc:"Short-term creative + long-term business", next:"R_zes_plus_smartstart"},
+      {icon:"💰", label:"We need investment to renovate them", desc:"Spaces need work before anyone can use them", next:"R_nc3_realestate"},
+    ]
+  },
+  dt_plan: {
+    q:"What aspect feels most urgent?",
+    sub:"We'll start with the biggest lever.",
+    opts:[
+      {icon:"🏘️", label:"Physical space & placemaking", desc:"Public spaces, streetscapes, walkability", next:"R_ashlime_place"},
+      {icon:"🎯", label:"Brand, identity & marketing", desc:"Who are we? How do we tell our story?", next:"R_civicbrand_identity"},
+      {icon:"🌱", label:"Growing local businesses & entrepreneurs", desc:"Fill the spaces, build the energy", next:"entrepreneur"},
+      {icon:"💰", label:"We need funding to start anything", desc:"Can't move without money", next:"funding"},
+    ]
+  },
+  dt_traffic: {
+    q:"Why do you think people aren't stopping?",
+    sub:"Be honest — the diagnosis matters.",
+    opts:[
+      {icon:"🏚️", label:"Empty storefronts — nothing to stop for", desc:"Too much vacancy", next:"dt_vacant"},
+      {icon:"😐", label:"Businesses are there but uninviting", desc:"People don't know what's inside", next:"R_storefront_tired"},
+      {icon:"🎨", label:"No events, art, or public life", desc:"It feels dead even when shops are open", next:"R_ashlime_activate"},
+      {icon:"🤔", label:"People don't know we're here", desc:"Marketing and awareness problem", next:"R_civicbrand_awareness"},
+    ]
+  },
+
+  /* FUNDING */
+  funding: {
+    q:"What kind of funding are you looking for?",
+    sub:"Each approach opens different doors.",
+    opts:[
+      {icon:"🏛️", label:"Grants", desc:"Government or foundation grants", next:"R_quillify_grants"},
+      {icon:"👥", label:"Community investment", desc:"Local people investing in local projects", next:"fund_community"},
+      {icon:"📣", label:"Crowdfunding", desc:"Raise money from supporters & backers", next:"fund_crowd"},
+      {icon:"🤷", label:"Not sure — help me figure it out", desc:"I know I need money, not sure what kind", next:"fund_unsure"},
+    ]
+  },
+  fund_community: {
+    q:"What scale of community investment?",
+    sub:"This determines the right structure.",
+    opts:[
+      {icon:"🏦", label:"An ongoing community investment fund", desc:"Permanent fund serving multiple projects", next:"R_nc3_fund"},
+      {icon:"📣", label:"One specific project or business", desc:"Raise money for a particular thing", next:"R_crowdfund_single"},
+      {icon:"🌐", label:"Build a full local investing ecosystem", desc:"Education, policy, tools — the movement", next:"R_nc3_ecosystem"},
+    ]
+  },
+  fund_crowd: {
+    q:"Who's doing the crowdfunding?",
+    sub:"We have solutions for different players.",
+    opts:[
+      {icon:"🏢", label:"Our EDO, chamber, or nonprofit", desc:"We're crowdfunding a community project", next:"R_crowdfund_org"},
+      {icon:"🧑‍💼", label:"Local businesses in our community", desc:"Help businesses learn to crowdfund", next:"R_crowdfund_advisor"},
+      {icon:"🏘️", label:"A real estate or development project", desc:"Housing, commercial, mixed-use", next:"R_nc3_realestate"},
+    ]
+  },
+  fund_unsure: {
+    q:"What needs funding?",
+    sub:"The project type points us to the right approach.",
+    opts:[
+      {icon:"🏗️", label:"Infrastructure or community projects", desc:"Buildings, parks, public improvements", next:"R_nc3_infra"},
+      {icon:"🏪", label:"Small businesses in our community", desc:"They need capital to start or grow", next:"R_nc3_bizcapital"},
+      {icon:"🏢", label:"Our own organization's operations", desc:"We need grants to run our programs", next:"R_quillify_org"},
+      {icon:"🎨", label:"A creative or cultural project", desc:"Arts, events, cultural spaces", next:"R_crowdfund_creative"},
+    ]
+  },
+
+  /* ATTRACTION */
+  attraction: {
+    q:"What are you trying to attract?",
+    sub:"Different audiences need different strategies.",
+    opts:[
+      {icon:"🏭", label:"Businesses relocating or expanding", desc:"Get on site selectors' shortlists", next:"attract_biz"},
+      {icon:"👨‍👩‍👧", label:"Residents & talent", desc:"People to live and work here", next:"R_civicbrand_talent"},
+      {icon:"🧳", label:"Visitors & tourists", desc:"People to come spend money", next:"attract_tourism"},
+      {icon:"🤝", label:"Entrepreneurs to start businesses here", desc:"Homegrown businesses, not relocations", next:"attract_ent"},
+    ]
+  },
+  attract_biz: {
+    q:"What's holding you back from landing businesses?",
+    sub:"Let's find the bottleneck.",
+    opts:[
+      {icon:"📍", label:"Our site data is incomplete", desc:"Can't respond to RFIs quickly or professionally", next:"R_sitehunt_attract"},
+      {icon:"📢", label:"Nobody knows we exist", desc:"Need brand and outreach strategy", next:"R_civicbrand_attract"},
+      {icon:"🏚️", label:"Our downtown doesn't look the part", desc:"Prospects visit and aren't impressed", next:"downtown"},
+    ]
+  },
+  attract_tourism: {
+    q:"What's your current tourism situation?",
+    sub:"This helps us pick the right approach.",
+    opts:[
+      {icon:"🤔", label:"No tourism identity or strategy", desc:"We don't know how to market ourselves", next:"R_civicbrand_tourism"},
+      {icon:"🏪", label:"Tourists come but don't stay or spend", desc:"Downtown isn't a destination", next:"R_storefront_tourism"},
+      {icon:"🎨", label:"We need more attractions & experiences", desc:"Not enough reasons to visit", next:"R_zes_tourism"},
+    ]
+  },
+  attract_ent: {
+    q:"What's your current entrepreneur support look like?",
+    sub:"Be honest — it helps us match you right.",
+    opts:[
+      {icon:"🚫", label:"Nothing — starting from zero", desc:"No programs, workshops, or support", next:"R_smartstart_attract"},
+      {icon:"📋", label:"Good programs, but need capital behind them", desc:"Great ideas, not enough funding", next:"R_nc3_attract"},
+      {icon:"🏪", label:"Need affordable spaces for them", desc:"Storefronts, pop-ups, maker spaces", next:"R_zes_attract"},
+      {icon:"🎯", label:"Need to market ourselves to entrepreneurs", desc:"Build reputation as a startup-friendly place", next:"R_civicbrand_entattract"},
+    ]
+  },
+};
+
+/* ═══════════════════════════════════
+   RESULTS
+   ═══════════════════════════════════ */
+var RESULTS = {
+
+  R_econdevops_admin: { primary:"econdevops",
+    why:"You're stretched thin on admin. Econ Dev Ops specializes in exactly this — their VAs are trained for the economic development space and can immediately take over email, social media, newsletters, scheduling, and invoicing so you can refocus on strategy.",
+    also:[{key:"quillify",reason:"AI grant writing could also free up massive amounts of your time"},{key:"sitehunt",reason:"If property data is eating hours too, Sitehunt automates that"}] },
+
+  R_smartstart_micro: { primary:"smartstart",
+    why:"SmartStart was built for exactly this — supporting microbusinesses that traditional programs overlook. Their plug-and-play workshops and curriculum give your Chamber or EDO instant capacity to support early-stage entrepreneurs.",
+    also:[{key:"crowdfundbetter",reason:"Once entrepreneurs are ready, crowdfunding helps them raise capital"},{key:"nc3",reason:"A Community Investment Fund gives them ongoing access to local capital"}] },
+  R_smartstart_launch: { primary:"smartstart",
+    why:"You need entrepreneur support programs and you need them fast. SmartStart provides turnkey workshops, dashboards, and curriculum that deploy immediately — no need to spend a year building from scratch.",
+    also:[{key:"econdevops",reason:"A VA can handle the admin so you focus on program delivery"},{key:"crowdfundbetter",reason:"Pair programs with crowdfunding training for capital access"}] },
+  R_smartstart_aspiring: { primary:"smartstart",
+    why:"SmartStart is purpose-built for aspiring entrepreneurs — turning ideas and side hustles into real businesses. Their curriculum walks people through validation, planning, and launch with structured, hands-on support.",
+    also:[{key:"nc3",reason:"When businesses are ready, a community investment fund provides capital"},{key:"crowdfundbetter",reason:"Crowdfunding training gives entrepreneurs a path to raise money"}] },
+  R_smartstart_new: { primary:"smartstart",
+    why:"New business owners need fundamentals — marketing, financials, operations, customer service. SmartStart's programs deliver exactly this in a structured format Chambers and Main Streets can deploy immediately.",
+    also:[{key:"storefrontmastery",reason:"Helps new business owners make their storefronts shine"},{key:"crowdfundbetter",reason:"Crowdfunding helps them raise capital for growth"}] },
+  R_smartstart_pipeline: { primary:"smartstart",
+    why:"SmartStart builds the full entrepreneur pipeline — from people with ideas through operating microbusinesses. Their programs create a structured pathway so your community always has businesses in development at every stage.",
+    also:[{key:"nc3",reason:"A Community Investment Fund provides ongoing capital for your pipeline"},{key:"storefrontmastery",reason:"Helps businesses look professional once they open storefronts"}] },
+  R_smartstart_existing: { primary:"smartstart",
+    why:"Existing businesses struggling with fundamentals need structured support. SmartStart's workshops cover the core skills — marketing, financials, customer engagement — in a format that works for busy small business owners.",
+    also:[{key:"storefrontmastery",reason:"Pair business skills with storefront design & hospitality training"},{key:"crowdfundbetter",reason:"Crowdfunding can finance their next growth phase"}] },
+  R_smartstart_scratch: { primary:"smartstart",
+    why:"Starting from zero? SmartStart was designed for exactly this. Their turnkey programs give you instant entrepreneurship support infrastructure — workshops, curriculum, dashboards — ready to deploy without years of development.",
+    also:[{key:"nc3",reason:"Add a Community Investment Fund as your entrepreneurs' capital source"},{key:"zeroemptyspaces",reason:"Affordable creative space gives entrepreneurs a physical home"}] },
+  R_smartstart_funded: { primary:"smartstart",
+    why:"You have funding but need the programmatic backbone. SmartStart's plug-and-play model was designed for this — deploy proven workshops and curriculum fast so funding turns into real entrepreneur support.",
+    also:[{key:"storefrontmastery",reason:"Train new businesses on design and customer experience"},{key:"zeroemptyspaces",reason:"Affordable space lowers the barrier for new entrepreneurs"}] },
+  R_smartstart_fill: { primary:"smartstart",
+    why:"Empty storefronts reflect a thin entrepreneur pipeline. SmartStart helps communities develop microbusiness owners who become the next generation of Main Street tenants — from pop-up to permanent.",
+    also:[{key:"zeroemptyspaces",reason:"Activate spaces NOW while you build the pipeline"},{key:"crowdfundbetter",reason:"Help new businesses crowdfund into storefronts"}] },
+  R_smartstart_attract: { primary:"smartstart",
+    why:"SmartStart is designed for communities starting from zero. Plug-and-play programs give you instant entrepreneur support: workshops, curriculum, dashboards — ready to deploy and ready to attract people who want to start something.",
+    also:[{key:"nc3",reason:"A community investment fund signals a place that backs its entrepreneurs"},{key:"civicbrand",reason:"Brand yourself as a startup-friendly community"}] },
+
+  R_nc3_invest: { primary:"nc3",
+    why:"A Community Investment Fund lets your residents directly invest in local businesses — keeping capital circulating in the community. NC3's accelerator walks you through launching one, from legal structure to community education to deployment.",
+    also:[{key:"smartstart",reason:"Build the pipeline of investment-ready businesses"},{key:"crowdfundbetter",reason:"Crowdfunding complements your fund for individual campaigns"}] },
+  R_nc3_smalltown: { primary:"nc3",
+    why:"Tight-knit communities are ideal for Community Investment Funds — your residents already care about local success. NC3 builds the legal and financial structure that lets neighbors invest in each other's businesses formally and effectively.",
+    also:[{key:"smartstart",reason:"Grow the businesses worth investing in"},{key:"crowdfundbetter",reason:"Crowdfunding taps into that same community spirit"}] },
+  R_nc3_fund: { primary:"nc3",
+    why:"NC3's Community Capital Accelerator walks you through launching a Community Investment Fund — from legal structure to community engagement to capital deployment. It's the gold standard for community-sourced investment.",
+    also:[{key:"crowdfundbetter",reason:"Crowdfunding complements your fund for individual projects"},{key:"smartstart",reason:"SmartStart builds the businesses that receive investment"}] },
+  R_nc3_ecosystem: { primary:"nc3",
+    why:"NC3 is purpose-built for building local investing ecosystems — education, policy advocacy, fund structure, and their Community Capital Accelerator get communities from concept to functioning investment infrastructure.",
+    also:[{key:"crowdfundbetter",reason:"Certified Advisors become part of your ecosystem"},{key:"smartstart",reason:"SmartStart grows the businesses your ecosystem funds"}] },
+  R_nc3_realestate: { primary:"nc3",
+    why:"NC3's Diversified Community Investment Funds (DCIFs) are designed for exactly this — real estate and development funded by community members. Housing, commercial, mixed-use — all with locally-sourced capital.",
+    also:[{key:"zeroemptyspaces",reason:"Activate spaces during development timelines"},{key:"crowdfundbetter",reason:"Project crowdfunding can complement a larger fund"}] },
+  R_nc3_addcapital: { primary:"nc3",
+    why:"You have programs but no capital pipeline. A Community Investment Fund creates a sustainable, locally-sourced way to fund the businesses your programs develop. NC3's accelerator gets you there.",
+    also:[{key:"smartstart",reason:"SmartStart's programs are designed to layer with capital access"},{key:"crowdfundbetter",reason:"Crowdfunding adds another capital channel for your businesses"}] },
+  R_nc3_infra: { primary:"nc3",
+    why:"Infrastructure and community projects are perfect for Community Investment Funds — your residents invest in improvements that benefit everyone. NC3 helps you structure the fund so it's legally sound and community-driven.",
+    also:[{key:"quillify",reason:"Grants can co-fund infrastructure alongside community investment"},{key:"crowdfundbetter",reason:"Crowdfunding builds public buy-in and awareness"}] },
+  R_nc3_bizcapital: { primary:"nc3",
+    why:"Small businesses need accessible capital, and their neighbors want to help. A Community Investment Fund creates an ongoing, formal way for community members to invest in local businesses — not just one-time donations, but real investment returns.",
+    also:[{key:"crowdfundbetter",reason:"Crowdfunding helps individual businesses raise capital too"},{key:"smartstart",reason:"SmartStart gets businesses investment-ready"}] },
+  R_nc3_attract: { primary:"nc3",
+    why:"You have programs but need capital behind them. A Community Investment Fund creates a sustainable, locally-sourced funding mechanism that also tells entrepreneurs: this is a community that puts its money where its mouth is.",
+    also:[{key:"quillify",reason:"Grants can supplement community investment for program costs"},{key:"smartstart",reason:"SmartStart's programs are designed to layer with capital access"}] },
+
+  R_crowdfund_biz: { primary:"crowdfundbetter",
+    why:"Crowdfund Better trains businesses to raise capital from their own communities. Their courses and certified advisor program mean your local businesses learn to turn customers, neighbors, and supporters into investors and backers.",
+    also:[{key:"nc3",reason:"For a systematic, ongoing capital source, add a Community Investment Fund"},{key:"smartstart",reason:"Pair capital training with SmartStart's business development programs"}] },
+  R_crowdfund_diverse: { primary:"crowdfundbetter",
+    why:"A diverse business base benefits from crowdfunding's flexibility — each business runs its own campaign tailored to its audience. Crowdfund Better's training and certified advisor program build this capacity across your community.",
+    also:[{key:"nc3",reason:"A Community Investment Fund adds systematic capital alongside campaigns"},{key:"smartstart",reason:"Structured programs help newer businesses get campaign-ready"}] },
+  R_crowdfund_project: { primary:"crowdfundbetter",
+    why:"Crowdfund Better has helped hundreds of specific projects raise community capital. Their process turns a project into a compelling campaign that engages the whole community as backers and advocates.",
+    also:[{key:"nc3",reason:"For ongoing investment beyond a single campaign, NC3 builds the fund structure"},{key:"quillify",reason:"Grants can supplement what crowdfunding raises"}] },
+  R_crowdfund_single: { primary:"crowdfundbetter",
+    why:"For a single project or business, crowdfunding is perfect — Crowdfund Better's process has helped hundreds of campaigns succeed by turning community support into actual capital.",
+    also:[{key:"nc3",reason:"If you want to do this repeatedly, a Community Investment Fund is the next step"}] },
+  R_crowdfund_org: { primary:"crowdfundbetter",
+    why:"Crowdfund Better specializes in helping organizations run successful campaigns. Their consulting and training turn your community's goodwill into funded projects — from nonprofits to civic initiatives to economic development programs.",
+    also:[{key:"nc3",reason:"For ongoing community investment beyond a single campaign"},{key:"quillify",reason:"AI grant writing can supplement what you raise"}] },
+  R_crowdfund_advisor: { primary:"crowdfundbetter",
+    why:"Their Certified Advisor Program trains your staff to become crowdfunding experts who guide local businesses through campaigns. It's the first professional development program of its kind — you become the community's go-to crowdfunding resource.",
+    also:[{key:"smartstart",reason:"SmartStart provides the broader entrepreneur support framework"},{key:"nc3",reason:"NC3 builds community-level investing infrastructure alongside"}] },
+  R_crowdfund_creative: { primary:"crowdfundbetter",
+    why:"Creative and cultural projects thrive on crowdfunding — they naturally inspire community support. Crowdfund Better's process turns artistic vision into funded reality through rewards-based campaigns that build audience and capital simultaneously.",
+    also:[{key:"zeroemptyspaces",reason:"Affordable creative space for the artists and makers you're funding"},{key:"nc3",reason:"A Community Investment Fund can support creative economy systematically"}] },
+
+  R_storefront_existing: { primary:"storefrontmastery",
+    why:"Your existing businesses need help looking and feeling better. Storefront Mastery equips district managers to guide business owners in creating outstanding storefronts through design, hospitality, and storytelling — transforming shops into destinations.",
+    also:[{key:"ashlime",reason:"Rik Adamski works on broader placemaking that amplifies storefront improvements"},{key:"civicbrand",reason:"A unified brand ties individual storefront improvements together"}] },
+  R_storefront_tired: { primary:"storefrontmastery",
+    why:"Tired-looking storefronts kill foot traffic even when there are good businesses inside. Storefront Mastery trains the trainers — equipping your Main Street team to guide business owners in design, signage, hospitality, and storytelling.",
+    also:[{key:"ashlime",reason:"Broader placemaking creates the context for better storefronts"},{key:"smartstart",reason:"Business fundamentals paired with design creates lasting improvement"}] },
+  R_storefront_refresh: { primary:"storefrontmastery",
+    why:"Spaces that look rough scare away potential tenants and customers. Storefront Mastery's approach transforms the look and feel of business spaces through design principles and storytelling — making the same spaces feel new.",
+    also:[{key:"zeroemptyspaces",reason:"Affordable activation while permanent improvements happen"},{key:"ashlime",reason:"Broader streetscape and placemaking improvements"}] },
+  R_storefront_tourism: { primary:"storefrontmastery",
+    why:"Tourists come but don't stay because nothing compels them to stop. Storefront Mastery transforms individual businesses into destinations — the kind of places visitors photograph, share, and return to.",
+    also:[{key:"civicbrand",reason:"A destination brand amplifies individual business improvements"},{key:"zeroemptyspaces",reason:"Art studios create unique experiences tourists can't get elsewhere"}] },
+
+  R_quillify_grants: { primary:"quillify",
+    why:"You need grant funding and don't have time to find opportunities or write proposals. Quillify's AI finds grants matched to your organization and writes proposals in hours instead of weeks — with a 40% higher success rate.",
+    also:[{key:"nc3",reason:"Community Investment Funds provide capital where grants don't reach"},{key:"crowdfundbetter",reason:"Crowdfunding fills gaps when grants don't cover everything"}] },
+  R_quillify_org: { primary:"quillify",
+    why:"Your organization needs operating funding, and grants are the most direct path. Quillify finds matching opportunities and writes proposals using AI — dramatically increasing your chances while saving hundreds of hours.",
+    also:[{key:"econdevops",reason:"A VA handles the admin while you focus on strategy"},{key:"crowdfundbetter",reason:"Crowdfunding can supplement grant revenue"}] },
+
+  R_sitehunt_data: { primary:"sitehunt",
+    why:"Your site data is the foundation of business attraction, and right now it's a bottleneck. Sitehunt auto-enriches property data, builds RFI-ready profiles, and generates professional one-pagers — you'll never scramble when an opportunity hits.",
+    also:[{key:"econdevops",reason:"A VA can help maintain your data going forward"},{key:"civicbrand",reason:"A strong brand gets your sites in front of the right people"}] },
+  R_sitehunt_inventory: { primary:"sitehunt",
+    why:"You can't offer space to entrepreneurs if you don't know what's available. Sitehunt builds a comprehensive inventory of your commercial properties with auto-enriched data on zoning, utilities, and infrastructure — the foundation for everything else.",
+    also:[{key:"zeroemptyspaces",reason:"Once you know what's available, activate vacant spaces"},{key:"smartstart",reason:"Match entrepreneurs to spaces with SmartStart's programs"}] },
+  R_sitehunt_attract: { primary:"sitehunt",
+    why:"Site selectors decide based on data quality and response speed. Sitehunt auto-enriches properties and generates polished RFI responses in hours. You'll never lose a deal over incomplete data again.",
+    also:[{key:"civicbrand",reason:"A strong brand gets you in front of selectors in the first place"},{key:"econdevops",reason:"A VA can handle ongoing data maintenance"}] },
+
+  R_ashlime_place: { primary:"ashlime",
+    why:"Rik Adamski specializes in bottom-up, incremental neighborhood planning. He identifies high-impact / low-cost improvements, activates underused areas, and builds community engagement through practical, visible wins — not years-long master plans.",
+    also:[{key:"storefrontmastery",reason:"Complements placemaking with business-level design improvements"},{key:"civicbrand",reason:"Wraps physical improvements in a cohesive brand strategy"}] },
+  R_ashlime_activate: { primary:"ashlime",
+    why:"Dead public spaces need incremental activation — not massive capital projects. Rik Adamski's approach through ASH+LIME and the Storefront Renaissance League creates energy through small, strategic, visible interventions that build momentum.",
+    also:[{key:"zeroemptyspaces",reason:"Artist studios add permanent creative energy"},{key:"storefrontmastery",reason:"Help businesses contribute to the energy at street level"}] },
+
+  R_civicbrand_identity: { primary:"civicbrand",
+    why:"CivicBrand helps communities discover what makes them unique and builds authentic brand identity. Ryan Short's engagement-led process aligns residents, businesses, and leadership around a shared vision that drives everything from marketing to development.",
+    also:[{key:"ashlime",reason:"Translates brand strategy into physical placemaking"},{key:"storefrontmastery",reason:"Ensures businesses reflect the brand at street level"}] },
+  R_civicbrand_awareness: { primary:"civicbrand",
+    why:"If people don't know you're here, nothing else matters. CivicBrand builds place brands that make your community visible and memorable — consistent messaging across every channel that draws people in.",
+    also:[{key:"storefrontmastery",reason:"Once people arrive, great storefronts make them stay"},{key:"ashlime",reason:"Physical improvements back up the brand promise"}] },
+  R_civicbrand_talent: { primary:"civicbrand",
+    why:"Talent attraction starts with identity. CivicBrand's place branding uncovers what makes your community a place people want to live and turns that into strategy — not just a logo, but a story that resonates with the talent you need.",
+    also:[{key:"ashlime",reason:"Placemaking makes the community match the brand promise"},{key:"smartstart",reason:"Entrepreneur support signals a dynamic community"}] },
+  R_civicbrand_tourism: { primary:"civicbrand",
+    why:"CivicBrand builds destination marketing rooted in authentic identity. Ryan Short's process reveals what makes your community worth visiting and turns it into strategy that reaches the right visitors through the right channels.",
+    also:[{key:"storefrontmastery",reason:"Great storefronts are what visitors photograph and share"},{key:"zeroemptyspaces",reason:"Artist studios create unique cultural experiences"}] },
+  R_civicbrand_attract: { primary:"civicbrand",
+    why:"You have something to offer but nobody's hearing about it. CivicBrand builds place brands that get you noticed — consistent messaging that puts you in front of site selectors, talent, and investors.",
+    also:[{key:"sitehunt",reason:"Bulletproof site data once they start paying attention"},{key:"ashlime",reason:"Physical improvements back up the brand when prospects visit"}] },
+  R_civicbrand_biz: { primary:"civicbrand",
+    why:"If local businesses can't attract customers, the community needs a stronger brand that drives foot traffic. CivicBrand aligns your downtown identity so individual businesses benefit from collective marketing and community storytelling.",
+    also:[{key:"storefrontmastery",reason:"Individual storefront improvements complement community branding"},{key:"smartstart",reason:"Business development programs help owners capitalize on increased traffic"}] },
+  R_civicbrand_entattract: { primary:"civicbrand",
+    why:"To attract entrepreneurs, you need to be known as a place that welcomes them. CivicBrand crafts that narrative — positioning your community as startup-friendly and backing it with real engagement strategy.",
+    also:[{key:"smartstart",reason:"SmartStart provides the programs that deliver on the brand promise"},{key:"nc3",reason:"A Community Investment Fund proves you put capital behind the brand"}] },
+
+  R_zes_activate: { primary:"zeroemptyspaces",
+    why:"Zero Empty Spaces has perfected turning vacant storefronts into affordable artist studios. They create foot traffic, cultural energy, and visual life — all while property owners wait for permanent tenants. 30+ locations nationwide prove the model works.",
+    also:[{key:"ashlime",reason:"Broader placemaking strategy around activated spaces"},{key:"storefrontmastery",reason:"For improving storefronts that ARE occupied"}] },
+  R_zes_creative: { primary:"zeroemptyspaces",
+    why:"Zero Empty Spaces creates affordable creative studios in vacant commercial space at $2-2.50/sq ft. They remove the biggest barrier for creative entrepreneurs — the cost of space — while filling empty storefronts with visible creative energy.",
+    also:[{key:"smartstart",reason:"Pair affordable space with business development support"},{key:"nc3",reason:"Community Investment Funds can finance space improvements"}] },
+  R_zes_retail: { primary:"zeroemptyspaces",
+    why:"Zero Empty Spaces activates vacant storefronts quickly and affordably, creating low-risk retail space where entrepreneurs can test concepts before committing to long-term leases. Pop-up to permanent, with minimal financial risk.",
+    also:[{key:"smartstart",reason:"Business development support for the entrepreneurs filling those spaces"},{key:"storefrontmastery",reason:"Helps new businesses design their spaces for maximum impact"}] },
+  R_zes_plus_smartstart: { primary:"zeroemptyspaces",
+    why:"Zero Empty Spaces activates vacant storefronts with artist studios today — creating foot traffic and cultural energy right now. Meanwhile, SmartStart builds your entrepreneur pipeline for permanent tenants. Short-term activation meets long-term strategy.",
+    also:[{key:"smartstart",reason:"Long-term play — growing the entrepreneurs who become permanent tenants"},{key:"storefrontmastery",reason:"Helps new businesses look amazing when they move in"}] },
+  R_zes_ecosystem: { primary:"zeroemptyspaces",
+    why:"You have programs and funding but no physical space. Zero Empty Spaces solves this fast — converting vacant storefronts into affordable studios and retail space so your entrepreneurs have somewhere to actually work and sell.",
+    also:[{key:"storefrontmastery",reason:"Make those spaces look professional and inviting"},{key:"ashlime",reason:"Broader placemaking creates the context for thriving businesses"}] },
+  R_zes_tourism: { primary:"zeroemptyspaces",
+    why:"Artist studios and creative spaces are experiences tourists can't get at a mall or online. Zero Empty Spaces creates authentic, unique cultural destinations that give visitors a reason to stop, explore, and spend.",
+    also:[{key:"civicbrand",reason:"A destination brand amplifies the creative energy"},{key:"storefrontmastery",reason:"Helps all businesses create experiences worth visiting"}] },
+  R_zes_attract: { primary:"zeroemptyspaces",
+    why:"Affordable space is the #1 barrier for many entrepreneurs. Zero Empty Spaces creates affordable studio and retail space in vacant storefronts — giving creatives and makers a low-risk entry point to test their business.",
+    also:[{key:"smartstart",reason:"Business development support for entrepreneurs in those spaces"},{key:"storefrontmastery",reason:"Helps spaces look professional and inviting"}] },
+};
+
+/* ═══════════════════════════════════
+   APP STATE
+   ═══════════════════════════════════ */
+var currentNode = 'start';
+var pendingResult = null;
+var navStack = [];
+
+var $q = document.getElementById('questionArea');
+var $e = document.getElementById('emailArea');
+var $r = document.getElementById('resultArea');
+
+function showView(which) {
+  $q.classList.add('hidden');
+  $e.classList.add('hidden');
+  $r.classList.add('hidden');
+  which.classList.remove('hidden');
+}
+
+function renderQuestion() {
+  var node = TREE[currentNode];
+  if (!node) return;
+  var step = navStack.length + 1;
+  var h = '';
+  if (navStack.length > 0)
+    h += '<button class="back-btn" onclick="goBack()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>Back</button>';
+  h += '<div class="question-card">';
+  h += '<div class="question-number">Question '+step+'</div>';
+  h += '<div class="question-text">'+node.q+'</div>';
+  h += '<div class="question-subtext">'+node.sub+'</div>';
+  h += '<div class="options">';
+  for (var i=0;i<node.opts.length;i++) {
+    var o = node.opts[i];
+    h += '<button class="option-btn" onclick="pick(\''+o.next+'\')" style="animation:fadeUp .3s ease-out '+(i*.05)+'s both">';
+    h += '<div class="option-icon">'+o.icon+'</div>';
+    h += '<div><span class="option-label">'+o.label+'</span><span class="option-desc">'+o.desc+'</span></div>';
+    h += '</button>';
+  }
+  h += '</div></div>';
+  $q.innerHTML = h;
+  showView($q);
+  updateProgress('question');
+}
+
+function showEmail() {
+  document.getElementById('emailInput').value = '';
+  document.getElementById('emailInput').classList.remove('error');
+  document.getElementById('emailError').classList.remove('show');
+  document.getElementById('nameInput').value = '';
+  document.getElementById('orgInput').value = '';
+  document.getElementById('submitBtn').disabled = false;
+  document.getElementById('submitBtn').textContent = 'See My Match →';
+  showView($e);
+  updateProgress('email');
+  setTimeout(function(){ document.getElementById('emailInput').focus(); }, 300);
+}
+
+function renderResult() {
+  var key = pendingResult;
+  var r = RESULTS[key];
+  if (!r) { restart(); return; }
+  var p = COMPANIES[r.primary];
+  var h = '<button class="back-btn" onclick="goBack()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>Back</button>';
+  h += '<div class="results-card"><div class="result-match">';
+  h += '<div class="match-badge">Your Best Match</div>';
+  h += '<div class="match-name">'+p.icon+' '+p.name+'</div>';
+  h += '<div class="match-tagline">'+p.tagline+'</div>';
+  h += '<div class="match-description">'+p.description+'</div>';
+  h += '<a class="match-url" href="https://'+p.url+'" target="_blank" rel="noopener">'+p.url+' ↗</a>';
+  h += '<div class="match-why"><strong>Why this is your match</strong>'+r.why+'</div></div>';
+  if (r.also && r.also.length) {
+    h += '<div class="also-consider"><h3>Also Worth a Conversation</h3>';
+    for (var i=0;i<r.also.length;i++) {
+      var a = r.also[i], c = COMPANIES[a.key];
+      h += '<div class="also-item"><div class="also-item-icon">'+c.icon+'</div>';
+      h += '<div><div class="also-item-name">'+c.name+'</div><div class="also-item-reason">'+a.reason+'</div></div></div>';
+    }
+    h += '</div>';
+  }
+  h += '<button class="restart-btn" onclick="restart()">↻ Start Over</button></div>';
+  $r.innerHTML = h;
+  showView($r);
+  updateProgress('result');
+}
+
+function pick(next) {
+  navStack.push({ node: currentNode, pendingResult: pendingResult, view: 'question' });
+  if (next.indexOf('R_') === 0) {
+    pendingResult = next;
+    showEmail();
+  } else {
+    currentNode = next;
+    renderQuestion();
+  }
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function submitEmail() {
+  var el = document.getElementById('emailInput');
+  var email = el.value.trim();
+  if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    el.classList.add('error');
+    document.getElementById('emailError').classList.add('show');
+    el.focus();
+    return;
+  }
+
+  // Disable button to prevent double-submit
+  var btn = document.getElementById('submitBtn');
+  btn.disabled = true;
+  btn.textContent = 'Saving…';
+
+  sendLead({
+    email: email,
+    name: document.getElementById('nameInput').value.trim(),
+    org: document.getElementById('orgInput').value.trim(),
+    resultKey: pendingResult,
+  });
+
+  // Show result
+  navStack.push({ node: currentNode, pendingResult: pendingResult, view: 'email' });
+  renderResult();
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function skipEmail() {
+  sendLead({ email:'(skipped)', name:'', org:'', resultKey: pendingResult });
+  navStack.push({ node: currentNode, pendingResult: pendingResult, view: 'email' });
+  renderResult();
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function goBack() {
+  if (!navStack.length) return;
+  var prev = navStack.pop();
+  currentNode = prev.node;
+  pendingResult = prev.pendingResult;
+  if (prev.view === 'question') renderQuestion();
+  else if (prev.view === 'email') showEmail();
+  else renderResult();
+}
+
+function restart() {
+  navStack = [];
+  currentNode = 'start';
+  pendingResult = null;
+  renderQuestion();
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function updateProgress(view) {
+  var fill = document.getElementById('progressFill');
+  var text = document.getElementById('progressText');
+  var step = document.getElementById('progressStep');
+  var depth = navStack.length;
+  if (view === 'result') {
+    fill.style.width='100%'; text.textContent='Match found!'; step.textContent='✓';
+  } else if (view === 'email') {
+    fill.style.width='90%'; text.textContent='Almost there…'; step.textContent='✉';
+  } else if (depth === 0) {
+    fill.style.width='0%'; text.textContent="Let's get started"; step.textContent='';
+  } else {
+    fill.style.width=Math.min((depth/3)*80,80)+'%';
+    text.textContent='Narrowing it down…'; step.textContent='Step '+(depth+1);
+  }
+}
+
+renderQuestion();
+</script>
+</body>
+</html>
